@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Constants\Status;
+use Closure;
+
+class MaintenanceMode
+{
+    public function handle($request, Closure $next)
+    {
+        $general = gs();
+        if ($general->maintenance_mode == Status::ENABLE && !$request->is('admin/*') && !$request->is('maintenance-mode') && !$request->is('admin') ) {
+            if ($request->ajax() || $request->wantsJson()) {
+                $notify[] = 'Our application is currently in maintenance mode';
+                return response()->json([
+                    'remark'=>'maintenance_mode',
+                    'status'=>'error',
+                    'message'=>['error'=>$notify]
+                ]);
+            }else{
+                return to_route('maintenance');
+            }
+
+
+        }
+        return $next($request);
+    }
+
+
+}
