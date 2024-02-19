@@ -231,9 +231,23 @@ function notify($user, $templateName, $shortCodes = null, $sendVia = null, $crea
     if (gettype($user) == 'array') {
         $user = (object) $user;
     }
+    // $message = "";
+    // if($templateName == 'EXCHANGE_REFUND')
+    // {
+    //   $message = $shortCodes['amount'] .' '. $shortCodes['currency'] . ' refunded in your '.$shortCodes['method']. ' wallet. Your Exchange id '. $shortCodes['exchange'];
+    //   $message .= ' '.$shortCodes['reason'];
+    // }
+    // if($templateName == 'CANCEL_EXCHANGE')
+    // {
+    //   $message = $shortCodes['reason'];
+    // }
+    // if($templateName == 'APPROVED_EXCHANGE')
+    // {
+    //   $message = $shortCodes['amount'] .' '. $shortCodes['currency'] . ' send in your '.$shortCodes['method']. ' wallet. Your Exchange id '. $shortCodes['exchange'];
+    // }
 
+    // $shortCodes['message'] = $message;
     $shortCodes = array_merge($shortCodes ?? [], $globalShortCodes);
-
     $notify = new Notify($sendVia);
     $notify->templateName = $templateName;
     $notify->shortCodes = $shortCodes;

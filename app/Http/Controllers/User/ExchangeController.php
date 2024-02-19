@@ -20,7 +20,7 @@ class ExchangeController extends Controller
 
     public function exchange(Request $request)
     {
-
+      // dd($request->all());
         // $this->validation($request);
 
 
@@ -29,9 +29,18 @@ class ExchangeController extends Controller
         $sendCurrency    = Currency::enabled()->availableForSell()->find($request->sending_currency);
         $receiveCurrency = Currency::enabled()->availableForBuy()->find($request->receiving_currency);
 
+        // dd($request->all());
+
+        $exchange_rate = ExchangeRate::where('gateway_from', $sendCurrency->name)
+        ->where('gateway_from_cur_sym', $sendCurrency->cur_sym)
+        ->where('gateway_to', $receiveCurrency->name)
+        ->where('gateway_to_cur_sym', $receiveCurrency->cur_sym)
+        ->first();
 
         $sendingCurrencyExchangeRates = ExchangeRate::find($request->sending_currency);
         $RecivingCurrencyExchangeRates = ExchangeRate::find($request->receiving_currency);
+
+
 
 
 
@@ -114,7 +123,7 @@ class ExchangeController extends Controller
         $exchange->sending_amount      = $sendAmount;
         $exchange->sending_charge = $totalSendingCharge ?? 0;
         $exchange->receiving_amount    = $receiveAmount;
-        $exchange->receiving_charge    = $totalReceivingCharge ?? 0;
+        $exchange->receiving_charge    = $exchange_rate->fixed_charge ?? 0;
         $exchange->sell_rate           = $receiveCurrency->sell_at;
         $exchange->buy_rate            = $sendCurrency->buy_at;
         $exchange->exchange_id         = getTrx();
@@ -133,6 +142,7 @@ class ExchangeController extends Controller
         }
         $pageTitle = 'Exchange Preview';
         $exchange  = Exchange::where('exchange_id', session('EXCHANGE_TRACK'))->with('receivedCurrency.userDetailsData')->firstOrFail();
+        // dd($exchange);
         return view($this->activeTemplate . 'user.exchange.preview', compact('pageTitle', 'exchange'));
     }
 

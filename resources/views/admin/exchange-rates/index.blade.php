@@ -12,7 +12,7 @@
                                     <th>@lang('Gateway From')</th>
                                     <th>@lang('Gateway To')</th>
                                     <th>@lang('Exchange Rate')</th>
-                                    <th>@lang('Percent Charge')</th>
+                                    <!-- <th>@lang('Percent Charge')</th> -->
                                     <th>@lang('Fixed Charge')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
@@ -30,8 +30,8 @@
                                             {{ ($exchange_rate->gateway_to) }}
                                         </td>
                                         <td>{{ showAmount($exchange_rate->rate_from) * 1 }} {{ $exchange_rate->gateway_to_cur_sym }}  = {{ showAmount($exchange_rate->rate_to)* 1  }} {{ $exchange_rate->gateway_from_cur_sym }}  </td>
-                                        <td>{{ showAmount($exchange_rate->percent_charge)* 1  }}</td>
-                                        <td>{{ showAmount($exchange_rate->fixed_charge)* 1  }}</td>
+                                        <!-- <td>{{ showAmount($exchange_rate->percent_charge)* 1  }}</td> -->
+                                        <td>{{ showAmount($exchange_rate->fixed_charge)  }}</td>
 
                                         <td>
                                            <button class="btn btn--primary btn-sm text-white">
@@ -72,4 +72,3 @@
     </div>
     <x-confirmation-modal />
 @endsection
-

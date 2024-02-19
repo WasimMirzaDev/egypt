@@ -271,7 +271,7 @@
                 let html = `
                 <div class="form-group">
                     <label>Reason Of Refund</label>
-                    <textarea type="text" name="refund_reason" required class="form-control"></textarea>
+                    <textarea type="text" name="refund_reason" class="form-control"></textarea>
                 </div>`;
                 modal.find('form').attr('action', `{{ route('admin.exchange.refund', $exchange->id) }}`)
                 modal.find(".modal-body").html(html);

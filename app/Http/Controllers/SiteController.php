@@ -62,7 +62,7 @@ class SiteController extends Controller {
         $exchangeRates = ExchangeRate::where('gateway_from', $gateway_from)
             ->where('gateway_to', $gateway_to)
             ->latest()
-            ->select('rate_to', 'rate_from', 'percent_charge')
+            ->select('rate_to', 'rate_from', 'percent_charge', 'fixed_charge')
             ->first();
 
         if (empty($you_get)) {
@@ -84,10 +84,15 @@ class SiteController extends Controller {
         if ($exchangeRates) {
             $rate_from = $exchangeRates->rate_from;
             $rate_to = $exchangeRates->rate_to;
-            $ratio = $rate_to / $rate_from;
-            $you_send = ($you_get * $ratio); // Adjusted calculation
+            $ratio = $rate_from / $rate_to;
+            // $you_send = ($you_get+$exchangeRates->fixed_charge)/$ratio;
+            $you_send = $you_get/$ratio;
+            // $you_send = ($you_get * $ratio); // Adjusted calculation
             $percent_charge = $you_send * ($exchangeRates->percent_charge / 100);
-            $you_send = $you_send - $percent_charge; // Updated calculation
+            // $you_send = $you_send - $percent_charge; // Updated calculation
+            // $you_send = $you_send - $exchangeRates->fixed_charge;
+
+            // u_get+fee/ration
 
             $result  = [
                 'you_get' => $you_get,
@@ -134,7 +139,7 @@ class SiteController extends Controller {
         $exchangeRates = ExchangeRate::where('gateway_from', $gateway_from)
             ->where('gateway_to', $gateway_to)
             ->latest()
-            ->select('rate_to', 'rate_from', 'percent_charge', 'gateway_from_cur_sym', 'gateway_to_cur_sym')
+            ->select('rate_to', 'rate_from', 'percent_charge', 'gateway_from_cur_sym', 'gateway_to_cur_sym', 'fixed_charge')
             ->first();
 
         if (empty($you_send)) {
@@ -162,12 +167,13 @@ class SiteController extends Controller {
         $rate_to = $exchangeRates->rate_to;
         $ratio = $rate_from / $rate_to; // Fixed ratio calculation
         $you_get = $you_send * $ratio;
+        // $you_get = $you_get - $exchangeRates->fixed_charge;
         $percent_charge = $you_get * ($exchangeRates->percent_charge / 100);
-        $you_get = $you_get - $percent_charge;
+        // $you_get = $you_get - $percent_charge;
         $result = [
             'you_get' => $you_get,
             'you_get_input' => $you_get,
-
+            'fixed_charge' => $exchangeRates->fixed_charge,
             'percent_charge' => $percent_charge,
             'you_send' => $you_send,
             'gateway_from_cur_sym' => $exchangeRates->gateway_from_cur_sym,
@@ -206,7 +212,7 @@ class SiteController extends Controller {
             ]);
         }
     }
-    public function index() 
+    public function index()
     {
 
      $reference = @$_GET['reference'];
@@ -238,7 +244,7 @@ class SiteController extends Controller {
         return view($this->activeTemplate . 'pages', compact('pageTitle', 'sections'));
     }
 
-    public function contact() 
+    public function contact()
     {
         $pageTitle = "Contact Us";
         return view($this->activeTemplate . 'contact', compact('pageTitle'));
@@ -298,14 +304,14 @@ class SiteController extends Controller {
         return to_route('ticket.view', [$ticket->ticket])->withNotify($notify);
     }
 
-    public function policyPages($slug, $id) 
+    public function policyPages($slug, $id)
     {
         $policy    = Frontend::where('id', $id)->firstOrFail();
         $pageTitle = $policy->data_values->title;
         return view($this->activeTemplate . 'policy', compact('policy', 'pageTitle'));
     }
 
-    public function changeLanguage($lang = null) 
+    public function changeLanguage($lang = null)
     {
         $language = Language::where('code', $lang)->first();
         if (!$language) $lang = 'en';
@@ -313,7 +319,7 @@ class SiteController extends Controller {
         return back();
     }
 
-    public function blog() 
+    public function blog()
     {
         $pageTitle = "Blogs";
         $blogs     = Frontend::where('template_name', gs()->active_template)->where('data_keys', 'blog.element')->latest()->paginate(getPaginate(12));
@@ -321,7 +327,7 @@ class SiteController extends Controller {
         return view($this->activeTemplate . 'blog', compact('blogs', 'pageTitle', 'sections'));
     }
 
-    public function blogDetails($slug, $id) 
+    public function blogDetails($slug, $id)
     {
         $blog         = Frontend::where('id', $id)->firstOrFail();
 
@@ -340,7 +346,7 @@ class SiteController extends Controller {
     }
 
 
-    public function cookieAccept() 
+    public function cookieAccept()
     {
         $general = gs();
         Cookie::queue('gdpr_cookie', $general->site_name, 43200);
@@ -398,7 +404,7 @@ class SiteController extends Controller {
         return view('partials.maintenance', compact('pageTitle', 'maintenance'));
     }
 
-    public function trackExchange(Request $request) 
+    public function trackExchange(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'exchange_id' => 'required|exists:exchanges,exchange_id'
@@ -422,7 +428,7 @@ class SiteController extends Controller {
         }
     }
 
-    public function subscribe(Request $request) 
+    public function subscribe(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
@@ -468,15 +474,14 @@ class SiteController extends Controller {
         ->orderBy('id', 'DESC')
         ->where('id', $id)
         ->firstOrFail();
-        
+
         $user=User::where('id',$userId)->firstOrFail();
  $pageTitle = "Download Exchange";
         $pdf = PDF::loadView('partials.pdf', compact('pageTitle', 'user', 'exchange'));
         $fileName  = $exchange->exchange_id . '_' . time();
-       
+
         return $pdf->download($fileName . '.pdf');
-        
+
         return route('user.exchange.invoice', ['id' => $exchange->exchange_id, 'type' => 'download']);
     }
 }
-

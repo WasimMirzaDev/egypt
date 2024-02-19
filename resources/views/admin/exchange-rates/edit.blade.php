@@ -35,10 +35,12 @@
             </div>
 
             <div class="col-md-6">
+
+
                 <label class="mt-3" for="fixedCharge">Exchange Fee</label><br>
-                <input class="w-100 form-control"  name="fixedCharge" id="fixedCharge" type="number" step="any" value="{{ old('fixedCharge', $exchangeRate->fixed_charge) }}">
+                <input class="w-100 form-control" name="fixedCharge" id="fixedCharge" type="number" step="any" value="{{ old('fixedCharge', $exchangeRate->fixed_charge) }}">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" style="display:none;">
                 <label class="mt-3" for="percentCharge">Percent Charge</label><br>
                 <input class="w-100 form-control" name="percentCharge" id="percentCharge" type="number" value="{{ old('percentCharge', $exchangeRate->percent_charge*1) }}">
             </div>

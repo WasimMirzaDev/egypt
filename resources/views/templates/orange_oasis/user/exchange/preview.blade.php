@@ -82,6 +82,7 @@
 
                                     <li class="list-group-item d-flex justify-content-between flex-column flex-wrap border-dotted">
                                         <span class="fw-bold text--danger">
+                                            <!-- {{showAmount($exchange->fixed_charge)}} -->
                                             {{ showAmount(@$exchange->receiving_charge) }} {{ __(ucfirst(@$exchange->receivedCurrency->cur_sym)) }}
                                         </span>
                                         <small class="text-muted">@lang('Charge')</small>

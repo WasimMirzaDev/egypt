@@ -31,7 +31,7 @@
       @csrf
       <input type="hidden" name="sending_currency" id="sending_currency_name">
       <input type="hidden" name="receiving_currency" id="receiving_currency_name">
-      
+
       <div class="container">
     <div class="row">
         <div class="col-md-6 mx-auto">
@@ -55,8 +55,8 @@
           </div>
         </div>
         <div class="col-md-12 mb-2 d-flex justify-content-between justify-content-md-start justify-content-lg-between">
-   
-  
+
+
          <style>
   /* Resize and change shape of the button */
   #send_gateway {
@@ -72,7 +72,7 @@
     border-radius: 10px; /* Adjust the border-radius to change the shape */
   }
     /* Style for the input field */
-  #you_send { 
+  #you_send {
     width: 250px; /* Adjust the width as needed */
     border-radius: 20px; /* Adjust the border-radius to change the shape */
     border: 1px solid #8a2be2; /* Add border style */
@@ -91,31 +91,31 @@
 </style>
 
 
-         
+
               <div style="order: 1" class="d-flex justify-content-center">
   <small style="font-size: 14px; color: #6c757d; border: 1px solid #8a2be2; border-radius: 5px; padding: 5px;">
     <b>@lang('Min'): <span class="text--primary" id="min-value"></span></b>
   </small>
 </div>
 
-            
-            
+
+
               <div style="order: 2"><span id="limitError" class="text--primary"></span></div>
-       
-          
+
+
               <div style="order: 3" class="d-flex justify-content-center">
   <small style="font-size: 14px; color: #6c757d; border: 1px solid #8a2be2; border-radius: 5px; padding: 5px;">
     <b>@lang('Max'): <span class="text--primary" id="max-value"></span></b>
   </small>
 </div>
 
-              
-           
-  
 
-          
-          
-       
+
+
+
+
+
+
        </div>
 <div class="col-md-6 mx-auto">
             <!-- You Get -->
@@ -142,20 +142,20 @@
   <!-- Content goes here -->
 </div>
 
-            
+
             <div style="order: 1; display: none;">
   <small>
     <b>@lang('Average Percent'): <span id="rate-percent" class="text--primary"></span></b>
   </small>
 </div>
 
-            
+
             <div style="order: 2;" class="d-flex justify-content-center">
   <small style="font-size: 14px; color: #6c757d; border: 1px solid #8a2be2; border-radius: 5px; padding: 5px;">
     <b>@lang('Rate'): <span class="text--primary"><span id="rate-from"></span> <span id="rate-from-cur"></span> <span id="equal"></span> <span id="rate-to"></span> <span id="rate-to-cur"></span></span></b>
   </small>
 </div>
- 
+
         </div>
         <style>
   .btn-bubble {
@@ -183,8 +183,8 @@
 </div>
 
 </div>
+</form>
 
-        
   </div>
   <script>
     var sendCurrencyName = '';
@@ -194,7 +194,7 @@
     var inputValue='';
 
 // Get all the <a> tags inside the first dropdown menu
-        
+
         function selectSendGateway(sendGateway, imageSrc, currencyId) {
         var sendGatewayButton = document.getElementById("send_gateway");
         sendGatewayButton.innerHTML = `
@@ -225,18 +225,18 @@
                     $('#limitError').text("ㅤ");
                 }
                 }
-            
-        
-        
+
+
+
         });
         var inputValue = document.getElementById("you_send").value;
         performKeywordCalculation(sendCurrencyName,reciveCurrencyName,reciveCurrencyId,sendCurrencyId,inputValue);
-        
+
 
         }
 
 
-        
+
         function selectReciveGateway(reciveGateway, imageSrc, currencyId) {
             var reciveGatewayButton = document.getElementById("recive_gateway");
             reciveGatewayButton.innerHTML = `
@@ -251,15 +251,15 @@
 
 
             performKeywordCalculation(sendCurrencyName,reciveCurrencyName,reciveCurrencyId,sendCurrencyId,inputValue);
-        
+
         }
-        
-        
+
+
         function youSend(event){
             var inputValue = event.target.value;
 
         performKeywordCalculation(sendCurrencyName,reciveCurrencyName,reciveCurrencyId,sendCurrencyId,inputValue);
-        
+
         }
 
         function performKeywordCalculation(sendCurrencyName,reciveCurrencyName,reciveCurrencyId,sendCurrencyId,inputValue){
@@ -275,7 +275,7 @@
                 recive_currency_name: reciveCurrencyName,
                 you_send: inputValue
                 },
-                
+
                 success: function(response) {
                 if(response.success){
                     var you_get =parseFloat(response.data.you_get).toFixed(2);
@@ -293,7 +293,7 @@
                 $('#rate-from-cur').text(gateway_from_cur_sym);
                 $('#equal').text('=');
                 $('#limitError').text("ㅤ");
-                
+
 
                 }else{
                     var error =response.message;
@@ -301,16 +301,16 @@
                 }
 
                 },
-            
+
 
             });
         }
         function youGet(event){
             var getInputValue = event.target.value;
             inputValue=getInputValue;
-            
+
         performYouGetCalculation(sendCurrencyName,reciveCurrencyId,sendCurrencyId,reciveCurrencyName,getInputValue);
-       
+
         }
         function performYouGetCalculation(sendCurrencyName,sendCurrencyId,reciveCurrencyId,reciveCurrencyName,getInputValue){
 
@@ -333,12 +333,12 @@
                     var you_send =parseFloat(response.data.you_send).toFixed(2);
                     var gateway_from_cur_sym=response.data.gateway_to_cur_sym;
             var gateway_to_cur_sym=response.data.gateway_from_cur_sym;
-          
+
             $('#rate-percent').text(percent_charge);
             $('#rate-from').text(you_get);
                 $('#rate-to').text(you_send);
                 $('#you_send').val(you_send);
-                
+
                 $('#rate-from-cur').text(gateway_to_cur_sym);
                 $('#rate-to-cur').text(gateway_from_cur_sym);
                 $('#limitError').text("ㅤ");
@@ -349,25 +349,25 @@
                     $('#limitError').text(error);
                 }
                 }
-            
+
         });
         }
         function formSubmit(sendCurrencyName,sendCurrencyId,reciveCurrencyId,reciveCurrencyName,getInputValue){
         console.log(sendCurrencyName,sendCurrencyId,reciveCurrencyId,reciveCurrencyName,getInputValue);
         var receiving_amount = document.getElementById("you_get").value;
-       
+
         var sending_amount = document.getElementById("you_send").value;
         var sending_amount_int = parseInt(sending_amount);
         alert(receiving_amount);
-       
+
         }
 
 
 
 </script>
 
-  
-  
+
+
 @push('style-lib')
     <link href="{{ asset('assets/global/css/select2.min.css') }}" rel="stylesheet">
 @endpush

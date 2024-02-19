@@ -135,7 +135,7 @@ class NotifyProcess
         //Getting the notification message from database if use and template exist
         //If not exist, get the message which have sent via method
         if ($user && $template) {
-
+           
             if (empty($message)) {
                 $message = $template->$body; $statusField = $this->statusField;
             if ($template->$statusField != 1) {
@@ -147,7 +147,6 @@ class NotifyProcess
             $message = $this->replaceShortCode($this->receiverName, $this->toAddress, $this->setting->$globalTemplate, $this->message);
         }
         //replace the all short cod of template
-        // dd($this->shortCodes);
         if ($this->shortCodes) {
             foreach ($this->shortCodes as $code => $value) {
                 $message = str_replace('{{' . $code . '}}', $value, $message);
@@ -169,9 +168,8 @@ class NotifyProcess
     protected function replaceShortCode($name, $username, $template, $body)
     {
         $message = str_replace("{{fullname}}", $name, $template);
-        // $message = str_replace("{{username}}", $username, $message);
+        $message = str_replace("{{username}}", $username, $message);
         $message = str_replace("{{message}}", $body, $message);
-        // dd($message);
         return $message;
     }
     /**

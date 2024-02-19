@@ -17,7 +17,7 @@ use SendGrid\Mail\Mail;
 use Mailjet\Client;
 use Mailjet\Resources;
 
-class ExchangeController extends Controller 
+class ExchangeController extends Controller
 {
     public function index($scope)
     {
@@ -32,7 +32,7 @@ class ExchangeController extends Controller
         return view('admin.exchange.list', compact('pageTitle', 'exchanges'));
     }
 
-    public function details($id) 
+    public function details($id)
     {
         $exchange  = Exchange::findOrFail($id);
         $pageTitle = 'Exchange Details: ' . $exchange->exchange_id;
@@ -43,40 +43,40 @@ class ExchangeController extends Controller
         $request->validate([
             'cancel_reason' => 'required',
         ]);
-
+        // dd($request->cancel_reason);
         $exchange = Exchange::where('id', $id)->pending()->firstOrFail();
 
-        $exchange->admin_feedback = $request->cancel_reason;
-        $exchange->status         = Status::EXCHANGE_CANCEL;
-        $exchange->save();
+        // $exchange->admin_feedback = $request->cancel_reason;
+        // $exchange->status         = Status::EXCHANGE_CANCEL;
+        // $exchange->save();
 
-        notify($exchange->user, 'CANCEL_EXCHANGE', [
+      $notify =  notify($exchange->user, 'CANCEL_EXCHANGE', [
             'exchange' => $exchange->exchange_id,
-            'reason'   => $exchange->cancel_reason
+            'reason'   => $request->cancel_reason
         ]);
-
         $notify[] = ['success', 'Exchange canceled successfully'];
         return back()->withNotify($notify);
     }
 
-    public function refund(Request $request, $id) 
+    public function refund(Request $request, $id)
     {
-        $request->validate([
-            'refund_reason' => 'required',
-        ]);
+        // $request->validate([
+        //     'refund_reason' => 'required',
+        // ]);
 
         $exchange = Exchange::where('id', $id)->pending()->firstOrFail();
+        // dd($exchange);
 
-        $exchange->admin_feedback = $request->refund_reason;
-        $exchange->status         = Status::EXCHANGE_REFUND;
-        $exchange->save();
+        // $exchange->admin_feedback = $request->refund_reason;
+        // $exchange->status         = Status::EXCHANGE_REFUND;
+        // $exchange->save();
 
         notify($exchange->user, 'EXCHANGE_REFUND', [
             'exchange' => $exchange->exchange_id,
             'currency' => $exchange->sendCurrency->cur_sym,
-            'amount'   => showAmount($exchange->user_total_send_amount),
+            'amount'   => showAmount($exchange->sending_amount),
             'method'   => $exchange->sendCurrency->name,
-            'reason'   => $exchange->admin_feedback
+            'reason'   => $request->refund_reason
         ]);
 
         $notify[] = ['success', 'Exchange refunded successfully'];
@@ -84,16 +84,16 @@ class ExchangeController extends Controller
     }
 
 
-    public function approve(Request $request, $id) 
+    public function approve(Request $request, $id)
     {
         $request->validate([
             'transaction' => 'required',
         ]);
 
         $exchange = Exchange::where('id', $id)->pending()->firstOrFail();
-        $exchange->status       = Status::EXCHANGE_APPROVED;
-        $exchange->admin_trx_no = $request->transaction;
-        $exchange->save();
+        // $exchange->status       = Status::EXCHANGE_APPROVED;
+        // $exchange->admin_trx_no = $request->transaction;
+        // $exchange->save();
 
         $user = User::find($exchange->user_id);
         $gs   = gs();
@@ -116,7 +116,7 @@ class ExchangeController extends Controller
         notify($user, 'APPROVED_EXCHANGE', [
             'exchange'                 => $exchange->exchange_id,
             'currency'                 => $exchange->receivedCurrency->cur_sym,
-            'amount'                   => showAmount($exchange->receiving_amount),
+            'amount'                   => showAmount($exchange->receiving_amount - $exchange->receiving_charge),
             'method'                   => $exchange->receivedCurrency->name,
             'admin_transaction_number' => $request->transaction
         ]);
@@ -173,7 +173,7 @@ class ExchangeController extends Controller
         return 0;
     }
 
-    public function download($exchangeId) 
+    public function download($exchangeId)
     {
         $pageTitle = "Download Exchange";
         $exchange  = Exchange::where('status', '!=', Status::EXCHANGE_INITIAL)->where('id', $exchangeId)->with('user')->firstOrFail();

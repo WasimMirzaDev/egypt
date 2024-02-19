@@ -135,45 +135,68 @@ class NotifyProcess
         //Getting the notification message from database if use and template exist
         //If not exist, get the message which have sent via method
         if ($user && $template) {
-
-            if (empty($message)) {
-                $message = $template->$body; $statusField = $this->statusField;
+            $statusField = $this->statusField;
             if ($template->$statusField != 1) {
                 return false;
             }
             $message = $this->replaceShortCode($user->fullname, $user->username, $this->setting->$globalTemplate, $template->$body);
+            if (empty($message)) {
+                $message = $template->$body;
             }
         } else {
+          if(empty($this->message))
+          {
+            $this->message = $this->shortCodes['message'];
+          }
             $message = $this->replaceShortCode($this->receiverName, $this->toAddress, $this->setting->$globalTemplate, $this->message);
         }
         //replace the all short cod of template
-        // dd($this->shortCodes);
         if ($this->shortCodes) {
             foreach ($this->shortCodes as $code => $value) {
                 $message = str_replace('{{' . $code . '}}', $value, $message);
             }
         }
         //Check email enable
-        if (!$this->template && $this->templateName) return false;
+        // if (!$this->template && $this->templateName) return false;
         //set subject to property
         $this->getSubject();
+
         $this->finalMessage = $message;
         //return the final message
         return $message;
     }
     /**
      * Replace the short code of global template
-     *
-     * @return string
-     */
-    protected function replaceShortCode($name, $username, $template, $body)
-    {
-        $message = str_replace("{{fullname}}", $name, $template);
-        // $message = str_replace("{{username}}", $username, $message);
-        $message = str_replace("{{message}}", $body, $message);
-        // dd($message);
-        return $message;
+/**
+ * Replace short codes in the template with actual values.
+ *
+ * @param string $name
+ * @param mixed $username The username to replace.
+ * @param mixed $template The template string with short codes.
+ * @param string $body
+ * @return string The message with short codes replaced.
+ */
+protected function replaceShortCode($name, $username, $template, $body)
+{
+    // Ensure $template is a string
+    $template = (string) $template;
+
+    // Convert $username to string if it's an array
+    if (is_array($username)) {
+        $username = implode(', ', $username); // You can choose your delimiter
+    } else {
+        $username = (string) $username;
     }
+
+    // Perform replacements
+    $message = str_replace("{{fullname}}", $name, $template);
+    $message = str_replace("{{username}}", $username, $message);
+    $message = str_replace("{{message}}", $body, $message);
+
+    return $message;
+}
+
+
     /**
      * Set the subject with replaced the short codes
      *

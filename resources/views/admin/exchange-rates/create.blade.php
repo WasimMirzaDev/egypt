@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 @section('panel')
-   
 
-  
+
+
 <form method="POST" action="{{ route('exchange-rates.store') }}">
     @csrf
    <div class="mt-5">
@@ -31,19 +31,19 @@
         <label class="mt-3" for="rate-to">Rate From</label><br>
        <input class="w-100 form-control" name="rateTo" id="rate-to" type="number" step="any">
     </div>
-      
+
         <div class="col-md-6">
             <label class="mt-3" for="rate-from">Rate To</label><br>
            <input class="w-100 form-control" name="rateFrom" id="rate-from" type="number" step="any">
         </div>
-       
+
         <div class="col-md-6">
             <label class="mt-3" for="rate-from">Fixed Charge</label><br>
            <input class="w-100 form-control" name="fixedCharge" id="rate-from" type="number" >
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" style="display:none;">
             <label class="mt-3" for="rate-to">Percent Charge</label><br>
-           <input class="w-100 form-control" name="percentCharge" id="rate-to" type="number" >
+           <input value="0" class="w-100 form-control" name="percentCharge" id="rate-to" type="number" >
         </div>
         <div>
             <button class="btn btn--primary text-white mt-3 w-100">Submit</button>
@@ -73,5 +73,3 @@
     document.getElementById("related_column_gateway_to").value = relatedValue;
   }
   </script>
-
-
