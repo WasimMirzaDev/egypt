@@ -96,8 +96,8 @@ class Notify
 		}else{
 			$methods = $this->notifyMethods();
 		}
-
-        //send the notification via methods one by one
+		// dd($this->shortCodes);
+    //send the notification via methods one by one
 		foreach($methods as $method){
 			$notify = new $method;
 			$notify->templateName = $this->templateName;

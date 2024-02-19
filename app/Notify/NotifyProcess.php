@@ -169,7 +169,7 @@ class NotifyProcess
     protected function replaceShortCode($name, $username, $template, $body)
     {
         $message = str_replace("{{fullname}}", $name, $template);
-        // $message = str_replace("{{username}}", $username, $message);
+        $message = str_replace("{{username}}", $username, $message);
         $message = str_replace("{{message}}", $body, $message);
         // dd($message);
         return $message;

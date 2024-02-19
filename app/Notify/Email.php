@@ -105,7 +105,12 @@ class Email extends NotifyProcess implements Notifiable{
         $mail->isHTML(true);
         $mail->Subject = $this->subject;
         $mail->Body    = $this->finalMessage;
-        $mail->send();
+				try {
+					$mail->send();
+				} catch (\Exception $e) {
+					dd($e);
+				}
+
 	}
 
 	protected function sendSendGridMail(){
